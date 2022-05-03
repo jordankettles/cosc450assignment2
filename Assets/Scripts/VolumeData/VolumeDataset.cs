@@ -9,6 +9,8 @@ namespace UnityVolumeRendering
         [SerializeField]
         public int[] data = null;
         [SerializeField]
+        public Color[] colorData = null;
+        [SerializeField]
         public int dimX, dimY, dimZ;
         [SerializeField]
         public float scaleX = 0.0f, scaleY = 0.0f, scaleZ = 0.0f;
@@ -76,21 +78,29 @@ namespace UnityVolumeRendering
             int maxValue = GetMaxDataValue();
             int maxRange = maxValue - minValue;
 
-            Color[] cols = new Color[data.Length];
-            for (int x = 0; x < dimX; x++)
-            {
-                for (int y = 0; y < dimY; y++)
+
+            if (colorData != null) {
+                texture.SetPixels(colorData);
+                texture.Apply();
+                return texture;
+            } else {
+                Color[] cols = new Color[data.Length];
+                for (int x = 0; x < dimX; x++)
                 {
-                    for (int z = 0; z < dimZ; z++)
+                    for (int y = 0; y < dimY; y++)
                     {
-                        int iData = x + y * dimX + z * (dimX * dimY);
-                        cols[iData] = new Color((float)(data[iData] - minValue) / maxRange, 0.0f, 0.0f, 0.0f);
+                        for (int z = 0; z < dimZ; z++)
+                        {
+                            int iData = x + y * dimX + z * (dimX * dimY);
+                            cols[iData] = new Color((float)(data[iData] - minValue) / maxRange, 0.0f, 0.0f, 0.0f);
+                        }
                     }
                 }
+                texture.SetPixels(cols);
+                texture.Apply();
+                return texture;
             }
-            texture.SetPixels(cols);
-            texture.Apply();
-            return texture;
+            
         }
 
         private Texture3D CreateGradientTextureInternal()
