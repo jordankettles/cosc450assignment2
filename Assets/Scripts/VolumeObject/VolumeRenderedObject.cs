@@ -113,6 +113,15 @@ namespace UnityVolumeRendering
                 meshRenderer.sharedMaterial.DisableKeyword("TF2D_ON");
             }
 
+            if(tfRenderMode == TFRenderMode.Colour)
+            {
+                meshRenderer.sharedMaterial.EnableKeyword("COLOUR_ON");
+            }
+            else
+            {
+                meshRenderer.sharedMaterial.DisableKeyword("COLOUR_ON");
+            }
+
             if(lightingEnabled)
                 meshRenderer.sharedMaterial.EnableKeyword("LIGHTING_ON");
             else

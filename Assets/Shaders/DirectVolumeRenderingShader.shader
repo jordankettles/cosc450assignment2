@@ -23,6 +23,7 @@
             CGPROGRAM
             #pragma multi_compile MODE_DVR MODE_MIP MODE_SURF
             #pragma multi_compile __ TF2D_ON
+            #pragma multi_compile __ COLOUR_ON
             #pragma multi_compile __ CUTOUT_PLANE CUTOUT_BOX_INCL CUTOUT_BOX_EXCL
             #pragma multi_compile __ LIGHTING_ON
             #pragma multi_compile DEPTHWRITE_ON DEPTHWRITE_OFF
@@ -195,10 +196,10 @@
 #if TF2D_ON
                     float mag = length(gradient) / 1.75f;
                     float4 src = getTF2DColour(density, mag);
-#else
-                    // float4 src = getTF1DColour(density);
+#elif COLOUR_ON
                     float4 src = getColor(currPos);
-                    // float4 src = float4(currColor.r, currColor.g, currColor.b , currColor.a);
+#else
+                    float4 src = getTF1DColour(density);
 #endif
 
                     // Apply lighting

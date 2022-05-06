@@ -10,6 +10,7 @@
     public enum TFRenderMode
     {
         TF1D,
-        TF2D
+        TF2D,
+        Colour
     }
 }
