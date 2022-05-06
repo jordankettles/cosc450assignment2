@@ -24,7 +24,7 @@ namespace UnityVolumeRendering
         private Texture3D gradientTexture = null;
 
         public Texture3D GetDataTexture()
-        {
+        { 
             if (dataTexture == null)
             {
                 dataTexture = CreateTextureInternal();
@@ -70,20 +70,21 @@ namespace UnityVolumeRendering
 
         private Texture3D CreateTextureInternal()
         {
-            TextureFormat texformat = SystemInfo.SupportsTextureFormat(TextureFormat.RHalf) ? TextureFormat.RHalf : TextureFormat.RFloat;
-            Texture3D texture = new Texture3D(dimX, dimY, dimZ, texformat, false);
-            texture.wrapMode = TextureWrapMode.Clamp;
-
             int minValue = GetMinDataValue();
             int maxValue = GetMaxDataValue();
             int maxRange = maxValue - minValue;
 
-
             if (colorData != null) {
+                TextureFormat texformat = TextureFormat.RGBAFloat;
+                Texture3D texture = new Texture3D(dimX, dimY, dimZ, texformat, false);
+                texture.wrapMode = TextureWrapMode.Clamp;
                 texture.SetPixels(colorData);
                 texture.Apply();
                 return texture;
             } else {
+                TextureFormat texformat = SystemInfo.SupportsTextureFormat(TextureFormat.RHalf) ? TextureFormat.RHalf : TextureFormat.RFloat;
+                Texture3D texture = new Texture3D(dimX, dimY, dimZ, texformat, false);
+                texture.wrapMode = TextureWrapMode.Clamp;
                 Color[] cols = new Color[data.Length];
                 for (int x = 0; x < dimX; x++)
                 {

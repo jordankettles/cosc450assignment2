@@ -33,8 +33,9 @@ namespace UnityVolumeRendering
                 throw new IndexOutOfRangeException("Image sequence has non-uniform dimensions");
 
             Vector3Int dimensions = GetVolumeDimensions(imagePaths);
-            Color[] colorData = FillSequentialData(dimensions, imagePaths);
-            VolumeDataset dataset = FillVolumeDataset(colorData, dimensions);
+            int[] data = FillSequentialData(dimensions, imagePaths);
+            Color[] colorData = FillColorData(dimensions, imagePaths);
+            VolumeDataset dataset = FillVolumeDataset(data, colorData, dimensions);
 
             return dataset;
         }
@@ -129,7 +130,33 @@ namespace UnityVolumeRendering
         /// <param name="dimensions">The XYZ dimensions of the volume.</param>
         /// <param name="paths">The set of image paths comprising the volume.</param>
         /// <returns>The set of sequential values for the volume.</returns>
-        private Color[] FillSequentialData(Vector3Int dimensions, List<string> paths)
+        private int[] FillSequentialData(Vector3Int dimensions, List<string> paths)
+        {
+            var data = new List<int>(dimensions.x * dimensions.y * dimensions.z);
+            var texture = new Texture2D(1, 1);
+
+            foreach (var path in paths)
+            {
+                byte[] bytes = File.ReadAllBytes(path);
+                texture.LoadImage(bytes);
+
+                Color[] pixels = texture.GetPixels(); // Order priority: X -> Y -> Z
+                int[] imageData = DensityHelper.ConvertColorsToDensities(pixels);
+
+                data.AddRange(imageData);
+            }
+
+            return data.ToArray();
+        }
+
+        
+        /// <summary>
+        /// Converts a volume set of images into a sequential series of values.
+        /// </summary>
+        /// <param name="dimensions">The XYZ dimensions of the volume.</param>
+        /// <param name="paths">The set of image paths comprising the volume.</param>
+        /// <returns>The set of sequential values for the volume.</returns>
+        private Color[] FillColorData(Vector3Int dimensions, List<string> paths)
         {
             var data = new List<Color>(dimensions.x * dimensions.y * dimensions.z);
             var texture = new Texture2D(1, 1);
@@ -152,7 +179,7 @@ namespace UnityVolumeRendering
         /// <param name="data">Sequential value data for a volume.</param>
         /// <param name="dimensions">The XYZ dimensions of the volume.</param>
         /// <returns>The wrapped volume data.</returns>
-        private VolumeDataset FillVolumeDataset(Color[] colorData, Vector3Int dimensions)
+        private VolumeDataset FillVolumeDataset(int[] data, Color[] colorData, Vector3Int dimensions)
         {
             string name = Path.GetFileName(directoryPath);
 
@@ -160,6 +187,7 @@ namespace UnityVolumeRendering
             {
                 name = name,
                 datasetName = name,
+                data = data,
                 colorData = colorData,
                 dimX = dimensions.x,
                 dimY = dimensions.y,

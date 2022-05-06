@@ -80,6 +80,12 @@
                 return tex2Dlod(_TFTex, float4(density, gradientMagnitude, 0.0f, 0.0f));
             }
 
+             // Get RGB color at the specified position.
+            float4 getColor(float3 pos)
+            {
+                return tex3Dlod(_DataTex, float4(pos.x, pos.y, pos.z, 0.0f));
+            }
+
             // Gets the density at the specified position
             float getDensity(float3 pos)
             {
@@ -88,7 +94,7 @@
 
             // Gets the gradient at the specified position
             float3 getGradient(float3 pos)
-            {
+            {   
                 return tex3Dlod(_GradientTex, float4(pos.x, pos.y, pos.z, 0.0f)).rgb;
             }
 
@@ -177,8 +183,8 @@
                     	continue;
 #endif
 
-                    // Get the dansity/sample value of the current position
                     const float density = getDensity(currPos);
+                    // const float density = 1.0f;
 
                     // Calculate gradient (needed for lighting and 2D transfer functions)
 #if defined(TF2D_ON) || defined(LIGHTING_ON)
@@ -190,7 +196,9 @@
                     float mag = length(gradient) / 1.75f;
                     float4 src = getTF2DColour(density, mag);
 #else
-                    float4 src = getTF1DColour(density);
+                    // float4 src = getTF1DColour(density);
+                    float4 src = getColor(currPos);
+                    // float4 src = float4(currColor.r, currColor.g, currColor.b , currColor.a);
 #endif
 
                     // Apply lighting
@@ -198,7 +206,7 @@
                     src.rgb = calculateLighting(src.rgb, normalize(gradient), lightDir, rayDir, 0.3f);
 #endif
 
-                    if (density < _MinVal || density > _MaxVal)
+if (density < _MinVal || density > _MaxVal)
                         src.a = 0.0f;
 
                     col.rgb = src.a * src.rgb + (1.0f - src.a)*col.rgb;
@@ -214,7 +222,7 @@
                 // Write fragment output
                 frag_out output;
                 //make it more transparent
-                //col.a = col.a*0.5;
+                // col.a = col.a*0.5;
                 output.colour = col;
 #if DEPTHWRITE_ON
                 if (iDepth != 0)
