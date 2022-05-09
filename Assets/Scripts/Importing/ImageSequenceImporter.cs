@@ -151,32 +151,33 @@ namespace UnityVolumeRendering
 
         
         /// <summary>
-        /// Converts a volume set of images into a sequential series of values.
+        /// Converts a volume set of images into a sequential series of color values.
         /// </summary>
         /// <param name="dimensions">The XYZ dimensions of the volume.</param>
         /// <param name="paths">The set of image paths comprising the volume.</param>
-        /// <returns>The set of sequential values for the volume.</returns>
+        /// <returns>The set of sequential color values for the volume.</returns>
         private Color[] FillColorData(Vector3Int dimensions, List<string> paths)
         {
             var data = new List<Color>(dimensions.x * dimensions.y * dimensions.z);
             var texture = new Texture2D(1, 1);
 
-            foreach (var path in paths)
+            foreach (var path in paths) // For each image.
             {
                 byte[] bytes = File.ReadAllBytes(path);
-                texture.LoadImage(bytes);
+                texture.LoadImage(bytes); // Load the image
 
-                Color[] pixels = texture.GetPixels(); // Order priority: X -> Y -> Z
-                data.AddRange(pixels);
+                Color[] pixels = texture.GetPixels(); // Get the pixels, order priority: X -> Y -> Z
+                data.AddRange(pixels); // Add the pixels to the data list.
             }
 
-            return data.ToArray();
+            return data.ToArray(); // return the data list.
         }
 
         /// <summary>
         /// Wraps volume data into a VolumeDataset.
         /// </summary>
         /// <param name="data">Sequential value data for a volume.</param>
+        /// <param name="colorData">Sequential color value data for a volume.</param>
         /// <param name="dimensions">The XYZ dimensions of the volume.</param>
         /// <returns>The wrapped volume data.</returns>
         private VolumeDataset FillVolumeDataset(int[] data, Color[] colorData, Vector3Int dimensions)
@@ -188,7 +189,7 @@ namespace UnityVolumeRendering
                 name = name,
                 datasetName = name,
                 data = data,
-                colorData = colorData,
+                colorData = colorData, // Here the color data is passed to the new VolumeDataset instance.
                 dimX = dimensions.x,
                 dimY = dimensions.y,
                 dimZ = dimensions.z,
