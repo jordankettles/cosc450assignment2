@@ -81,7 +81,7 @@
                 return tex2Dlod(_TFTex, float4(density, gradientMagnitude, 0.0f, 0.0f));
             }
 
-             // Get RGB color at the specified position.
+             // Get RGBA color at the specified position.
             float4 getColor(float3 pos)
             {
                 return tex3Dlod(_DataTex, float4(pos.x, pos.y, pos.z, 0.0f));
@@ -196,7 +196,7 @@
 #if TF2D_ON
                     float mag = length(gradient) / 1.75f;
                     float4 src = getTF2DColour(density, mag);
-#elif COLOUR_ON
+#elif COLOUR_ON // Get color values if we want to render in color.
                     float4 src = getColor(currPos);
 #else
                     float4 src = getTF1DColour(density);
