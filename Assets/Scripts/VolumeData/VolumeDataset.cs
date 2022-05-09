@@ -74,11 +74,11 @@ namespace UnityVolumeRendering
             int maxValue = GetMaxDataValue();
             int maxRange = maxValue - minValue;
 
-            if (colorData != null) {
+            if (colorData != null) { // If there is color data:
                 TextureFormat texformat = TextureFormat.RGBAFloat;
-                Texture3D texture = new Texture3D(dimX, dimY, dimZ, texformat, false);
+                Texture3D texture = new Texture3D(dimX, dimY, dimZ, texformat, false); // Create a 3D texture of RGBA values
                 texture.wrapMode = TextureWrapMode.Clamp;
-                texture.SetPixels(colorData);
+                texture.SetPixels(colorData); // Use the color data as the texture.
                 texture.Apply();
                 return texture;
             } else {
